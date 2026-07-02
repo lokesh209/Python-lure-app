@@ -92,6 +92,12 @@ class LureSSHClient(asyncssh.SSHClient):
         self.pwd = pwd
         self.q = q
 
+    def kbdint_auth_requested(self) -> str:
+        return ""  # Trigger custom kbdint_challenge_received
+
+    def password_auth_requested(self) -> str:
+        return self.pwd
+
     def connection_made(self, conn: asyncssh.SSHClientConnection) -> None:
         self.q.put_nowait(AuthEvent("info", "Connected to HiPerGator..."))
 
@@ -136,7 +142,6 @@ async def authenticate(password: Optional[str] = None) -> AsyncIterator[AuthEven
             # asyncssh will parse ~/.ssh/config.
             options = asyncssh.SSHClientConnectionOptions(
                 client_keys=None,
-                password=pwd,
                 preferred_auth=('keyboard-interactive', 'password')
             )
             
