@@ -1,0 +1,2 @@
+('/Users/lokesh/Desktop/Python-lure-app/backend/build/PythonLure/PYZ-00.pyz',
+ [])
