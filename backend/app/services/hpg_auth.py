@@ -93,7 +93,7 @@ class LureSSHClient(asyncssh.SSHClient):
         self.q = q
 
     def connection_made(self, conn: asyncssh.SSHClientConnection) -> None:
-        self.q.put_nowait(AuthEvent("info", f"Connected to {conn.get_server_host()}..."))
+        self.q.put_nowait(AuthEvent("info", "Connected to HiPerGator..."))
 
     def auth_completed(self) -> None:
         self.q.put_nowait(AuthEvent("ok", "Authenticated. Session is warm."))
