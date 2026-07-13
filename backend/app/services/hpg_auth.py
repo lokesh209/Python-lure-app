@@ -153,11 +153,15 @@ async def authenticate(password: Optional[str] = None) -> AsyncIterator[AuthEven
             if "@" in host:
                 username, host = host.split("@", 1)
 
+            kwargs = {}
+            if username:
+                kwargs["username"] = username
+
             conn, _ = await asyncssh.create_connection(
                 client_factory,
                 host,
-                username=username,
-                options=options
+                options=options,
+                **kwargs
             )
             
             if password:
