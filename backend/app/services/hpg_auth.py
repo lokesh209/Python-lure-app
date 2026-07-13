@@ -148,9 +148,15 @@ async def authenticate(password: Optional[str] = None) -> AsyncIterator[AuthEven
             def client_factory():
                 return LureSSHClient(pwd, q)
 
+            host = hpg.ssh_alias
+            username = None
+            if "@" in host:
+                username, host = host.split("@", 1)
+
             conn, _ = await asyncssh.create_connection(
                 client_factory,
-                hpg.ssh_alias,
+                host,
+                username=username,
                 options=options
             )
             

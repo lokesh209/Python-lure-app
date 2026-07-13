@@ -46,6 +46,7 @@ def derive_paths(
         "HIPERGATOR_REMOTE_BASE": f"{blue_dir}/{g}/lure_runs",
         "HIPERGATOR_CONDA_ENV": f"{blue_dir}/makinenilokesh/envs/megadetector",
         "HIPERGATOR_EMAIL": f"{g}@ufl.edu",
+        "HIPERGATOR_SSH_ALIAS": f"{g}@hpg.rc.ufl.edu",
     }
 
 

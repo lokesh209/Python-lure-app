@@ -41,13 +41,8 @@ class DisconnectOut(BaseModel):
 
 @router.post("/disconnect", response_model=DisconnectOut)
 async def disconnect() -> DisconnectOut:
-    import asyncio
-    from ..core.config import hipergator_settings as hpg
-    proc = await asyncio.create_subprocess_exec(
-        "ssh", "-O", "exit", hpg.ssh_alias,
-        stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL
-    )
-    await proc.wait()
+    from ..core.ssh_pool import pool
+    await pool.close()
     return DisconnectOut(ok=True)
 
 
