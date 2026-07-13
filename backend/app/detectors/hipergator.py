@@ -206,7 +206,7 @@ class HiPerGatorDetector:
             # For 40,000 files, wait for all uploads to complete
             await asyncio.gather(*upload_tasks)
             
-        await sftp.exit()
+        sftp.exit()
 
         # --- 2. Write sbatch on cluster ---
         await on_progress("submitting", 0.4, "Writing sbatch script", None)
@@ -303,7 +303,7 @@ class HiPerGatorDetector:
         job.output_json.parent.mkdir(parents=True, exist_ok=True)
         sftp = await conn.start_sftp_client()
         await sftp.get(remote_json, _posix(job.output_json))
-        await sftp.exit()
+        sftp.exit()
 
         # --- 6. Optional cleanup ---
         if not hpg.keep_remote:
