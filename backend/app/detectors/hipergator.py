@@ -182,31 +182,52 @@ class HiPerGatorDetector:
         await on_progress("uploading", 0.05,
                           f"Uploading images to {remote_dir}", None)
                           
-        # Native SFTP Upload
-        sftp = await conn.start_sftp_client()
-        sem = asyncio.Semaphore(50)
+        # High-performance streaming upload (compresses locally via tar and pipes over SSH)
+        # This is ~100x faster than SFTP for tens of thousands of small files.
+        await on_progress("uploading", 0.05, f"Compressing & uploading images to {remote_dir}", None)
         
-        async def _upload_file(local_p: str, remote_p: str):
-            async with sem:
-                await sftp.put(local_p, remote_p)
-                
-        upload_tasks = []
+        rel_files = []
         for root, dirs, files in os.walk(local_src):
-            rel = os.path.relpath(root, local_src)
-            rel_path = rel.replace("\\", "/")
-            if rel_path != ".":
-                await _ssh(f"mkdir -p '{remote_dir}/{rel_path}'")
             for file in files:
                 if file.lower().endswith((".jpg", ".jpeg")):
-                    lp = os.path.join(root, file)
-                    rp = f"{remote_dir}/{rel_path}/{file}" if rel_path != "." else f"{remote_dir}/{file}"
-                    upload_tasks.append(asyncio.create_task(_upload_file(lp, rp)))
+                    rel = os.path.relpath(os.path.join(root, file), local_src)
+                    rel_files.append(rel)
                     
-        if upload_tasks:
-            # For 40,000 files, wait for all uploads to complete
-            await asyncio.gather(*upload_tasks)
+        if rel_files:
+            # 1. Start local tar process emitting to stdout
+            proc_tar = await asyncio.create_subprocess_exec(
+                "tar", "-cf", "-", "-T", "-",
+                cwd=local_src,
+                stdin=asyncio.subprocess.PIPE,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            )
             
-        sftp.exit()
+            # Feed the file list to tar
+            file_list = "\n".join(rel_files).encode('utf-8')
+            proc_tar.stdin.write(file_list)
+            proc_tar.stdin.close()
+            await proc_tar.stdin.wait_closed()
+            
+            # 2. Start remote tar extraction process
+            remote_proc = await conn.create_process(f"cd '{remote_dir}' && tar -x")
+            
+            # 3. Pipe stdout stream to remote stdin
+            while True:
+                chunk = await proc_tar.stdout.read(65536 * 4)
+                if not chunk:
+                    break
+                remote_proc.stdin.write(chunk)
+                await remote_proc.stdin.drain()
+                
+            remote_proc.stdin.write_eof()
+            
+            await proc_tar.wait()
+            await remote_proc.wait()
+            
+            if remote_proc.exit_status != 0:
+                err = await remote_proc.stderr.read()
+                raise RuntimeError(f"Failed to extract uploaded files on HiPerGator: {err}")
 
         # --- 2. Write sbatch on cluster ---
         await on_progress("submitting", 0.4, "Writing sbatch script", None)
