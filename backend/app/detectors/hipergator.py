@@ -200,15 +200,18 @@ class HiPerGatorDetector:
                 tmp_file_list = f.name
 
             # 1. Start local tar process emitting to stdout
+            env = os.environ.copy()
+            env["COPYFILE_DISABLE"] = "1"
             proc_tar = await asyncio.create_subprocess_exec(
                 "tar", "-cf", "-", "-T", tmp_file_list,
                 cwd=local_src,
+                env=env,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.DEVNULL
             )
             
             # 2. Start remote tar extraction process
-            remote_proc = await conn.create_process(f"cd '{remote_dir}' && tar -x", encoding=None)
+            remote_proc = await conn.create_process(f"cd '{remote_dir}' && tar -x >/dev/null 2>&1", encoding=None)
             
             # 3. Pipe stdout stream to remote stdin
             while True:
