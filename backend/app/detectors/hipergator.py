@@ -194,20 +194,18 @@ class HiPerGatorDetector:
                     rel_files.append(rel)
                     
         if rel_files:
+            import tempfile
+            with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
+                f.write("\n".join(rel_files))
+                tmp_file_list = f.name
+
             # 1. Start local tar process emitting to stdout
             proc_tar = await asyncio.create_subprocess_exec(
-                "tar", "-cf", "-", "-T", "-",
+                "tar", "-cf", "-", "-T", tmp_file_list,
                 cwd=local_src,
-                stdin=asyncio.subprocess.PIPE,
                 stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
+                stderr=asyncio.subprocess.DEVNULL
             )
-            
-            # Feed the file list to tar
-            file_list = "\n".join(rel_files).encode('utf-8')
-            proc_tar.stdin.write(file_list)
-            proc_tar.stdin.close()
-            await proc_tar.stdin.wait_closed()
             
             # 2. Start remote tar extraction process
             remote_proc = await conn.create_process(f"cd '{remote_dir}' && tar -x")
@@ -224,6 +222,11 @@ class HiPerGatorDetector:
             
             await proc_tar.wait()
             await remote_proc.wait()
+            
+            try:
+                os.remove(tmp_file_list)
+            except OSError:
+                pass
             
             if remote_proc.exit_status != 0:
                 err = await remote_proc.stderr.read()
