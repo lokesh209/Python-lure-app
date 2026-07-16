@@ -208,7 +208,7 @@ class HiPerGatorDetector:
             )
             
             # 2. Start remote tar extraction process
-            remote_proc = await conn.create_process(f"cd '{remote_dir}' && tar -x")
+            remote_proc = await conn.create_process(f"cd '{remote_dir}' && tar -x", encoding=None)
             
             # 3. Pipe stdout stream to remote stdin
             while True:
