@@ -42,20 +42,24 @@ def _images_for(session: Session, project: Project) -> list[Image]:
 def _detections_for(session: Session, image_ids: list[int]) -> dict[int, list[Detection]]:
     if not image_ids:
         return {}
-    rows = session.exec(select(Detection).where(Detection.image_id.in_(image_ids))).all()
     out: dict[int, list[Detection]] = {}
-    for d in rows:
-        out.setdefault(d.image_id, []).append(d)
+    for i in range(0, len(image_ids), 500):
+        chunk = image_ids[i:i+500]
+        rows = session.exec(select(Detection).where(Detection.image_id.in_(chunk))).all()
+        for d in rows:
+            out.setdefault(d.image_id, []).append(d)
     return out
 
 
 def _tags_for(session: Session, image_ids: list[int]) -> dict[int, list[ImageTag]]:
     if not image_ids:
         return {}
-    rows = session.exec(select(ImageTag).where(ImageTag.image_id.in_(image_ids))).all()
     out: dict[int, list[ImageTag]] = {}
-    for t in rows:
-        out.setdefault(t.image_id, []).append(t)
+    for i in range(0, len(image_ids), 500):
+        chunk = image_ids[i:i+500]
+        rows = session.exec(select(ImageTag).where(ImageTag.image_id.in_(chunk))).all()
+        for t in rows:
+            out.setdefault(t.image_id, []).append(t)
     return out
 
 

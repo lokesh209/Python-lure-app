@@ -348,8 +348,10 @@ def delete_project(project_id: int, session: Session = Depends(get_session)):
     if existing_images:
         ids = [i.id for i in existing_images if i.id]
         if ids:
-            for d in session.exec(select(Detection).where(Detection.image_id.in_(ids))):
-                session.delete(d)
+            for i in range(0, len(ids), 500):
+                chunk = ids[i:i+500]
+                for d in session.exec(select(Detection).where(Detection.image_id.in_(chunk))):
+                    session.delete(d)
         for img in existing_images:
             session.delete(img)
             
@@ -503,8 +505,10 @@ def do_import_detections(
     if existing:
         ids = [i.id for i in existing if i.id]
         if ids:
-            for d in session.exec(select(Detection).where(Detection.image_id.in_(ids))):
-                session.delete(d)
+            for i in range(0, len(ids), 500):
+                chunk = ids[i:i+500]
+                for d in session.exec(select(Detection).where(Detection.image_id.in_(chunk))):
+                    session.delete(d)
 
     detection_count = 0
     flagged_count = 0
