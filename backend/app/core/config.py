@@ -64,8 +64,8 @@ class HiPerGatorSettings(BaseSettings):
     conda_env: str = "/blue/ramccleery/makinenilokesh/envs/megadetector"
     account: str = "ramccleery"
     qos: str = "ramccleery"
-    partition: str = "gpu"
-    gres: str = "gpu:1"
+    partition: str = "hpg-turin"
+    gres: str = "gpu:l4:1"
     cpus: int = 4
     mem: str = "8gb"
     time: str = "24:00:00"
