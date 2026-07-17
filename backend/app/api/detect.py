@@ -135,7 +135,11 @@ async def start_detection(
             project.id, "starting", 0.02, "Starting detection job…", detector.name
         )
         try:
-            await detector.run(job, on_progress)
+            if not job.output_json.exists():
+                await detector.run(job, on_progress)
+            else:
+                await on_progress("done", 1.0, "Found existing recognitionData.json; skipping detection.", None)
+                
             await asyncio.to_thread(_import_detections_sync, project.id)
             _snapshot_progress(
                 project.id, "imported", 1.0, "Detections imported", detector.name
