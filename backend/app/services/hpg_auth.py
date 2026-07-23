@@ -142,6 +142,7 @@ async def authenticate(password: Optional[str] = None) -> AsyncIterator[AuthEven
             # asyncssh will parse ~/.ssh/config.
             options = asyncssh.SSHClientConnectionOptions(
                 client_keys=None,
+                known_hosts=None,
                 preferred_auth=('keyboard-interactive', 'password')
             )
             
