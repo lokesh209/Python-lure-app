@@ -11,7 +11,7 @@ On Windows, run from a Windows shell with the same command.
 """
 from pathlib import Path
 import sys
-from PyInstaller.utils.hooks import collect_all
+from PyInstaller.utils.hooks import collect_all, copy_metadata
 
 ROOT = Path(SPECPATH).parent  # noqa: F821 — SPECPATH is set by PyInstaller
 BACKEND = ROOT / "backend"
@@ -57,6 +57,7 @@ datas.extend(numpy_datas)
 for pkg in ["ultralytics", "torch", "torchvision", "yolov5"]:
     c_datas, c_binaries, c_hiddenimports = collect_all(pkg)
     datas.extend(c_datas)
+    datas.extend(copy_metadata(pkg))
     hiddenimports.extend(c_hiddenimports)
 
 hiddenimports.extend(numpy_hiddenimports)
