@@ -194,7 +194,7 @@ export default function Settings() {
         <div>
           <h2 className="font-semibold">Inference Backend</h2>
           <p className="text-xs text-ink-500 mt-0.5">
-            Choose where to run the AI model. HiPerGator is the supercomputer (very fast, requires internet). Local runs directly on your Mac (slower, no internet needed).
+            Choose where to run the AI model. HiPerGator is the supercomputer (very fast, requires internet). Local runs directly on your computer (slower, no internet needed).
           </p>
           <div className="mt-2">
             <select
@@ -203,7 +203,7 @@ export default function Settings() {
               onChange={(e) => setDetector(e.target.value)}
             >
               <option value="hipergator">HiPerGator Cluster</option>
-              <option value="local">Local MacBook</option>
+              <option value="local">Local Computer</option>
               <option value="mock">Mock (Testing only)</option>
             </select>
           </div>

@@ -32,7 +32,9 @@ class LocalDetector(Detector):
 
         def download():
             try:
-                urllib.request.urlretrieve(self.weights_url, self.weights_path)
+                import ssl
+                ctx = ssl._create_unverified_context()
+                urllib.request.urlretrieve(self.weights_url, self.weights_path, context=ctx)
             except Exception as e:
                 logger.error(f"Failed to download weights: {e}")
                 if self.weights_path.exists():
