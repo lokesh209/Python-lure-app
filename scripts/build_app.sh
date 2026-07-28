@@ -16,7 +16,7 @@ backend/.venv/bin/pip install -r backend/requirements.txt --quiet
 backend/.venv/bin/pip install pyinstaller==6.11.1 --quiet
 # Force reinstall opencv-python-headless to ensure it's compatible with numpy 2.x
 backend/.venv/bin/pip uninstall -y opencv-python opencv-python-headless opencv-contrib-python --quiet 2>/dev/null || true
-backend/.venv/bin/pip install --no-cache-dir opencv-python-headless==4.13.0.92 --quiet
+backend/.venv/bin/pip install --no-cache-dir opencv-python-headless --quiet
 
 echo "==> Patching cv2/__init__.py for PyInstaller frozen-bundle compatibility..."
 backend/.venv/bin/python3 - << 'PYEOF'
