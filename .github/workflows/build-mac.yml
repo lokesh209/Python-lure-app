@@ -40,11 +40,11 @@ jobs:
 
     - name: Package App into ZIP
       run: |
-        cd backend/dist
+        cd dist
         ditto -c -k --keepParent "Python Lure.app" "PythonLure-Mac-${{ matrix.arch }}.zip"
 
     - name: Upload Mac App Artifact
       uses: actions/upload-artifact@v4
       with:
         name: PythonLure-Mac-${{ matrix.arch }}
-        path: backend/dist/PythonLure-Mac-${{ matrix.arch }}.zip
+        path: dist/PythonLure-Mac-${{ matrix.arch }}.zip
