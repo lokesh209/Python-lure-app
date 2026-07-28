@@ -76,7 +76,7 @@ class LocalDetector(Detector):
                     raise RuntimeError(f"yolov5 package is not installed. Cannot run local detector: {e}")
 
                 import torch
-                device = "mps" if torch.backends.mps.is_available() else "cpu"
+                device = "cuda" if torch.cuda.is_available() else "mps" if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available() else "cpu"
 
                 # yolov5.load handles YOLOv5-format .pt files (MegaDetector v5a)
                 # PyTorch 2.6+ defaults weights_only=True which blocks loading these checkpoints.
