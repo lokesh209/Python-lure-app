@@ -32,6 +32,7 @@ mkdir dist
 echo ==^> Step 4/4: Running PyInstaller
 pushd backend
 call .venv\Scripts\pyinstaller --noconfirm PythonLure.spec
+if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
 popd
 
 if exist backend\dist (

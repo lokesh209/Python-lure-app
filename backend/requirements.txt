@@ -15,4 +15,4 @@ opencv-python-headless==4.13.0.92
 ultralytics==8.1.0
 yolov5
 asyncssh>=2.14.0
-setuptools
+setuptools==69.5.1
