@@ -54,7 +54,7 @@ hiddenimports = [
 numpy_datas, numpy_binaries, numpy_hiddenimports = collect_all('numpy')
 datas.extend(numpy_datas)
 
-for pkg in ["ultralytics", "torch", "torchvision", "yolov5"]:
+for pkg in ["ultralytics", "torch", "torchvision", "yolov5", "setuptools", "pkg_resources"]:
     c_datas, c_binaries, c_hiddenimports = collect_all(pkg)
     datas.extend(c_datas)
     datas.extend(copy_metadata(pkg))
