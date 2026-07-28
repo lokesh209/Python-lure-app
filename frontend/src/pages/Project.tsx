@@ -302,7 +302,7 @@ export default function Project() {
                         onChange={(e) => setSelectedDetector(e.target.value)}
                         disabled={startDetect.isPending}
                       >
-                        <option value="local">Local Mac (Apple Silicon)</option>
+                        <option value="local">Local Computer</option>
                         <option value="hipergator">HiPerGator (Remote Cluster)</option>
                       </select>
                     </div>
