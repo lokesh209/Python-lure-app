@@ -46,6 +46,8 @@ hiddenimports = [
     "keyring.backends.SecretService",
     "pexpect",
     "ptyprocess",
+    "pkg_resources",
+    "setuptools",
 ]
 
 # Collect numpy first - must be done before cv2 to ensure C-extensions are found
