@@ -22,6 +22,14 @@ import time
 from contextlib import closing
 from pathlib import Path
 
+# Explicitly import setuptools and pkg_resources to FORCE PyInstaller to bundle them
+# on Windows/Python 3.12, as hiddenimports often fails for these specific packages.
+try:
+    import setuptools
+    import pkg_resources
+except ImportError:
+    pass
+
 # When packaged with PyInstaller, ``sys._MEIPASS`` points at the unpacked
 # resources directory. We also need to make ``app.*`` importable when the
 # script is launched from the bundle.
