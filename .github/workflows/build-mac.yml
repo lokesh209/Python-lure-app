@@ -1,0 +1,50 @@
+name: Build Mac Apps
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          # macos-13 is Intel (x86_64)
+          - os: macos-13
+            arch: Intel
+          # macos-14 is Apple Silicon (arm64)
+          - os: macos-14
+            arch: Silicon
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Run Mac Build Script
+      run: |
+        chmod +x scripts/build_app.sh
+        ./scripts/build_app.sh
+
+    - name: Package App into ZIP
+      run: |
+        cd backend/dist
+        ditto -c -k --keepParent "Python Lure.app" "PythonLure-Mac-${{ matrix.arch }}.zip"
+
+    - name: Upload Mac App Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: PythonLure-Mac-${{ matrix.arch }}
+        path: backend/dist/PythonLure-Mac-${{ matrix.arch }}.zip
